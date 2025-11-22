@@ -152,16 +152,16 @@ public class AnalyseurLexical {
     }
 
     private boolean egale(String str1, String str2) {
-        str1 += '#';
-        str2 += '#';
-        int i = 0;
-        boolean result = true;
-        while(str1.charAt(i) != '#' || str2.charAt(i) != '#') {
-            if(str1.charAt(i) != str2.charAt(i)) {
-                result = false;
-            }
-            i++;
+        if (str1.length() != str2.length()) {
+            return false;
         }
-        return result;
+
+        for (int i = 0; i < str1.length(); i++) {
+            if (str1.charAt(i) != str2.charAt(i)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
