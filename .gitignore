@@ -1,0 +1,53 @@
+### IntelliJ IDEA ###
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+# Fichiers compilés et temporaires
+*.class
+*.log
+/out/
+/build/
+/target/
+
+# Configuration et fichiers du système d'exploitation
+Thumbs.db
+
+# Fichiers de projet Java/IDE (pour IntelliJ IDEA, Eclipse, NetBeans)
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Fichiers jar et dépendances (déjà dans le dossier /lib, donc on les ignore)
+*.jar
+
+# Fichiers de logs et données sensibles (si vous en ajoutez)
+log/
+db_config.properties
