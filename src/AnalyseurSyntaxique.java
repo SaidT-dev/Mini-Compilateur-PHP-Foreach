@@ -1,6 +1,7 @@
 import java.util.List;
 
 public class AnalyseurSyntaxique {
+
     private static List<Token> tokens;
     private static int i = 0;
     private static boolean err = false;
@@ -15,7 +16,6 @@ public class AnalyseurSyntaxique {
 
     public static boolean verifier(TokenType typeAttendu) {
         if (err) return false;
-
         if (i >= tokens.size()) return false;
 
         Token courant = tokens.get(i);
@@ -90,10 +90,8 @@ public class AnalyseurSyntaxique {
                         if (verifier(TokenType.VARIABLE)) {
                             if (verifier(TokenType.PARENTHESE_FERMANTE)) {
                                 if (verifier(TokenType.ACCOLADE_OUVRANTE)) {
-                                    S();
-                                    if (verifier(TokenType.ACCOLADE_FERMANTE)) {
-
-                                    } else {
+                                    S(); // Contenu du foreach
+                                    if (!verifier(TokenType.ACCOLADE_FERMANTE)) {
                                         erreur("Manque }");
                                     }
                                 } else {
@@ -134,8 +132,13 @@ public class AnalyseurSyntaxique {
                 if (!verifier(TokenType.POINT_VIRGULE)) {
                     erreur("Manque ;");
                 }
+            } else if (typeSuivant == TokenType.DECREMENTATION) {
+                verifier(TokenType.DECREMENTATION);
+                if (!verifier(TokenType.POINT_VIRGULE)) {
+                    erreur("Manque ;");
+                }
             } else {
-                erreur("Attendu = ou ++ après la variable");
+                erreur("Attendu =, ++ ou -- après la variable");
             }
         }
     }
@@ -153,13 +156,44 @@ public class AnalyseurSyntaxique {
     }
 
     public static void Expression() {
+        Terme();
+        while (i < tokens.size() &&
+                (tokens.get(i).type == TokenType.PLUS || tokens.get(i).type == TokenType.MOINS)) {
+            if (err) return;
+            i++; // Consomme l'opérateur
+            Terme();
+        }
+    }
+
+    public static void Terme() {
+        Facteur();
+        while (i < tokens.size() &&
+                (tokens.get(i).type == TokenType.FOIS || tokens.get(i).type == TokenType.DIVISE)) {
+            if (err) return;
+            i++;
+            Facteur();
+        }
+    }
+
+    public static void Facteur() {
+        if (err) return;
+
         TokenType typeCourant = tokens.get(i).type;
+
         if (typeCourant == TokenType.NOMBRE ||
                 typeCourant == TokenType.VARIABLE ||
                 typeCourant == TokenType.IDENTIFIANT) {
             i++;
-        } else {
-            erreur("Expression attendue (Nombre, Variable ou Identifiant)");
+        }
+        else if (typeCourant == TokenType.PARENTHESE_OUVRANTE) {
+            i++;
+            Expression();
+            if (!verifier(TokenType.PARENTHESE_FERMANTE)) {
+                erreur("Manque ) après l'expression");
+            }
+        }
+        else {
+            erreur("Expression attendue (Nombre, Variable ou '('...)");
         }
     }
 }

@@ -54,7 +54,7 @@ public class AnalyseurLexical {
             else if (estChiffre(c)) {
                 lireNombre();
             }
-            // 5. Symboles
+            // 5. Symboles et Opérateurs
             else {
                 if (c == '{') {
                     ajouterToken(TokenType.ACCOLADE_OUVRANTE, "{");
@@ -71,15 +71,40 @@ public class AnalyseurLexical {
                 } else if (c == ';') {
                     ajouterToken(TokenType.POINT_VIRGULE, ";");
                     pos++;
-                } else if (c == '+') {
+                }
+                // GESTION DU PLUS (+) et INCREMENTATION (++)
+                else if (c == '+') {
                     if (regarderSuivant() == '+') {
                         ajouterToken(TokenType.INCREMENTATION, "++");
                         pos += 2;
                     } else {
-                        System.out.println("Operateur + seul ignoré ligne " + ligne);
+                        ajouterToken(TokenType.PLUS, "+"); // Ajouté !
                         pos++;
                     }
-                } else if (c == '=') {
+                }
+                // GESTION DU MOINS (-) et DECREMENTATION (--)
+                else if (c == '-') {
+                    if (regarderSuivant() == '-') {
+                        ajouterToken(TokenType.DECREMENTATION, "--");
+                        pos += 2;
+                    } else {
+                        ajouterToken(TokenType.MOINS, "-"); // Ajouté !
+                        pos++;
+                    }
+                }
+                // GESTION DU FOIS (*)
+                else if (c == '*') {
+                    ajouterToken(TokenType.FOIS, "*"); // Ajouté !
+                    pos++;
+                }
+                // GESTION DU DIVISE (/)
+                else if (c == '/') {
+                    // Note: C'est ici qu'on pourrait gérer les commentaires // si on voulait
+                    ajouterToken(TokenType.DIVISE, "/"); // Ajouté !
+                    pos++;
+                }
+                // GESTION DU EGAL (=) et EGALITE (==)
+                else if (c == '=') {
                     if (regarderSuivant() == '=') {
                         ajouterToken(TokenType.EGALITE, "==");
                         pos += 2;
@@ -122,7 +147,7 @@ public class AnalyseurLexical {
         } else if (egale(str, "as")) {
             ajouterToken(TokenType.AS, str);
         } else if (egale(str, "Said")) {
-            ajouterToken(TokenType.NOM, str); // Adapté à tes tokens
+            ajouterToken(TokenType.NOM, str);
         } else if (egale(str, "Tadjine")) {
             ajouterToken(TokenType.PRENOM, str);
         } else {
