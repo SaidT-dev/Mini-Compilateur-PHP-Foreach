@@ -99,9 +99,39 @@ public class AnalyseurLexical {
                 }
                 // GESTION DU DIVISE (/)
                 else if (c == '/') {
-                    // Note: C'est ici qu'on pourrait gérer les commentaires // si on voulait
-                    ajouterToken(TokenType.DIVISE, "/"); // Ajouté !
+                    if (regarderSuivant() == '/') {
+                        lireCommentaireSimple();
+                    } else if (regarderSuivant() == '*') {
+                        lireCommentaireMultiLignes();
+                    } else {
+                        ajouterToken(TokenType.DIVISE, "/");
+                        pos++;
+                    }
+                }
+                // GESTION DES STRINGS
+                else if (c == '"' || c == '\'') {
+                    lireString(c);
+                }
+                // GESTION DU POINT
+                else if (c == '.') {
+                    ajouterToken(TokenType.DOT, ".");
                     pos++;
+                }
+                // GESTION DU TERNAIRE
+                else if (c == '?') {
+                    ajouterToken(TokenType.QUESTION_MARK, "?");
+                    pos++;
+                } else if (c == ':') {
+                    ajouterToken(TokenType.COLON, ":");
+                    pos++;
+                }
+                // GESTION DES OPERATEURS LOGIQUES
+                else if (c == '&' && regarderSuivant() == '&') {
+                    ajouterToken(TokenType.AND, "&&");
+                    pos += 2;
+                } else if (c == '|' && regarderSuivant() == '|') {
+                    ajouterToken(TokenType.OR, "||");
+                    pos += 2;
                 }
                 // GESTION DU EGAL (=) et EGALITE (==)
                 else if (c == '=') {
@@ -125,6 +155,43 @@ public class AnalyseurLexical {
         return tokens;
     }
 
+    private void lireCommentaireSimple() {
+        pos += 2; // Saute le //
+        while (lireCaractere() != '\n' && lireCaractere() != EOF) {
+            pos++;
+        }
+    }
+
+    private void lireCommentaireMultiLignes() {
+        pos += 2; // Saute le /*
+        while (lireCaractere() != '*' || regarderSuivant() != '/') {
+            if (lireCaractere() == '\n') {
+                ligne++;
+            }
+            if (lireCaractere() == EOF) {
+                // Erreur, commentaire non fermé
+                return;
+            }
+            pos++;
+        }
+        pos += 2; // Saute le */
+    }
+
+    private void lireString(char delimiteur) {
+        int debut = ++pos;
+        while (lireCaractere() != delimiteur && lireCaractere() != EOF) {
+            if (lireCaractere() == '\\') { // Gérer les caractères d'échappement
+                pos++;
+            }
+            pos++;
+        }
+        String str = code.substring(debut, pos);
+        ajouterToken(TokenType.STRING, str);
+        if (lireCaractere() == delimiteur) {
+            pos++;
+        }
+    }
+
     private void lireVariable() {
         int debut = pos;
         pos++;
@@ -146,6 +213,14 @@ public class AnalyseurLexical {
             ajouterToken(TokenType.FOREACH, str);
         } else if (egale(str, "as")) {
             ajouterToken(TokenType.AS, str);
+        } else if (egale(str, "if")) {
+            ajouterToken(TokenType.IF, str);
+        } else if (egale(str, "else")) {
+            ajouterToken(TokenType.ELSE, str);
+        } else if (egale(str, "while")) {
+            ajouterToken(TokenType.WHILE, str);
+        } else if (egale(str, "for")) {
+            ajouterToken(TokenType.FOR, str);
         } else if (egale(str, "Said")) {
             ajouterToken(TokenType.NOM, str);
         } else if (egale(str, "Tadjine")) {

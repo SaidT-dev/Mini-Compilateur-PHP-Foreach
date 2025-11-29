@@ -61,7 +61,7 @@ public class Interface extends JFrame {
             AnalyseurSyntaxique.Z();
             console.setText("Code terminer avec succes !");
         } catch (Exception e) {
-            console.setText("Erreur syntaxique:\n" + e.getMessage());
+            console.setText(e.getMessage());
         }
     }
 }

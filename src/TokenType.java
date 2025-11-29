@@ -1,5 +1,6 @@
 public enum TokenType {
     FOREACH, AS, VARIABLE, IDENTIFIANT,
+    IF, ELSE, WHILE, FOR,
     NOMBRE,
     PARENTHESE_OUVRANTE, PARENTHESE_FERMANTE,
     ACCOLADE_OUVRANTE, ACCOLADE_FERMANTE,
@@ -11,5 +12,12 @@ public enum TokenType {
     PLUS, MOINS, FOIS, DIVISE,
     ET, OU,
     NOM, PRENOM,
+    STRING,
+    COMMENT,
+    DOT,
+    QUESTION_MARK,
+    COLON,
+    AND,
+    OR,
     FIN
 }
