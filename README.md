@@ -3,11 +3,19 @@
 ![Java](https://img.shields.io/badge/Language-Java-orange.svg)
 ![Java Version](https://img.shields.io/badge/Java-8+-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Version](https://img.shields.io/badge/Version-1.0-brightgreen.svg)
+[![Dernière version](https://img.shields.io/github/v/release/SaidT-dev/Mini-Compilateur-PHP-Foreach)](https://github.com/SaidT-dev/Mini-Compilateur-PHP-Foreach/releases/latest)
 
 Un compilateur pédagogique développé en **Java** dans le cadre du module de Compilation. Il analyse un sous-ensemble du langage **PHP**, avec un focus particulier sur la structure de contrôle `foreach`, la gestion des variables dynamiques et les expressions arithmétiques.
 
 ✨ **Nouveauté :** Le projet inclut une **Interface Graphique (Mini IDE)** pour écrire et compiler le code visuellement.
+
+---
+
+## 📥 Téléchargement
+
+Vous pouvez télécharger la dernière version exécutable (`.jar`) directement depuis les releases GitHub :
+
+[**➡️ Télécharger la dernière version**](https://github.com/SaidT-dev/Mini-Compilateur-PHP-Foreach/releases/latest)
 
 ---
 

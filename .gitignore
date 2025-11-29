@@ -46,7 +46,7 @@ Thumbs.db
 *.ipr
 
 # Fichiers jar et dépendances (déjà dans le dossier /lib, donc on les ignore)
-*.jar
+
 
 # Fichiers de logs et données sensibles (si vous en ajoutez)
 log/
