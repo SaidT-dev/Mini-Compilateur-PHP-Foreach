@@ -68,6 +68,15 @@ public class AnalyseurLexical {
                 } else if (c == ')') {
                     ajouterToken(TokenType.PARENTHESE_FERMANTE, ")");
                     pos++;
+                } else if (c == '[') {
+                    ajouterToken(TokenType.CROCHET_OUVRANT, "[");
+                    pos++;
+                } else if (c == ']') {
+                    ajouterToken(TokenType.CROCHET_FERMANT, "]");
+                    pos++;
+                } else if (c == ',') {
+                    ajouterToken(TokenType.VIRGULE, ",");
+                    pos++;
                 } else if (c == ';') {
                     ajouterToken(TokenType.POINT_VIRGULE, ";");
                     pos++;
@@ -119,9 +128,21 @@ public class AnalyseurLexical {
                 }
                 // GESTION DU TERNAIRE
                 else if (c == '?') {
-                    ajouterToken(TokenType.QUESTION_MARK, "?");
-                    pos++;
-                } else if (c == ':') {
+                    if (regarderSuivant() == '>') {
+                        ajouterToken(TokenType.PHP_TAG_FERMANT, "?>");
+                        pos += 2;
+                    } else {
+                        ajouterToken(TokenType.QUESTION_MARK, "?");
+                        pos++;
+                    }
+                } else if (c == '<') {
+                    if (code.length() > pos + 4 && code.substring(pos, pos + 5).equals("<?php")) {
+                        ajouterToken(TokenType.PHP_TAG_OUVRANT, "<?php");
+                        pos += 5;
+                    }
+                    // Potentiellement d'autres opérateurs avec < ici
+                }
+                else if (c == ':') {
                     ajouterToken(TokenType.COLON, ":");
                     pos++;
                 }
@@ -137,6 +158,9 @@ public class AnalyseurLexical {
                 else if (c == '=') {
                     if (regarderSuivant() == '=') {
                         ajouterToken(TokenType.EGALITE, "==");
+                        pos += 2;
+                    } else if (regarderSuivant() == '>') {
+                        ajouterToken(TokenType.FLECHE, "=>");
                         pos += 2;
                     } else {
                         ajouterToken(TokenType.AFFECTATION, "=");
@@ -221,6 +245,26 @@ public class AnalyseurLexical {
             ajouterToken(TokenType.WHILE, str);
         } else if (egale(str, "for")) {
             ajouterToken(TokenType.FOR, str);
+        } else if (egale(str, "true") || egale(str, "false")) {
+            ajouterToken(TokenType.BOOLEAN, str);
+        } else if (egale(str, "elseif")) {
+            ajouterToken(TokenType.ELSEIF, str);
+        } else if (egale(str, "echo")) {
+            ajouterToken(TokenType.ECHO, str);
+        } else if (egale(str, "function")) {
+            ajouterToken(TokenType.FUNCTION, str);
+        } else if (egale(str, "return")) {
+            ajouterToken(TokenType.RETURN, str);
+        } else if (egale(str, "switch")) {
+            ajouterToken(TokenType.SWITCH, str);
+        } else if (egale(str, "case")) {
+            ajouterToken(TokenType.CASE, str);
+        } else if (egale(str, "default")) {
+            ajouterToken(TokenType.DEFAULT, str);
+        } else if (egale(str, "break")) {
+            ajouterToken(TokenType.BREAK, str);
+        } else if (egale(str, "do")) {
+            ajouterToken(TokenType.DO, str);
         } else if (egale(str, "Said")) {
             ajouterToken(TokenType.NOM, str);
         } else if (egale(str, "Tadjine")) {

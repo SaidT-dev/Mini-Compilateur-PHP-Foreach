@@ -17,6 +17,7 @@ public class Interface extends JFrame {
 
         codeInput = new JTextArea();
         JScrollPane codeScrollPane = new JScrollPane(codeInput);
+        codeScrollPane.setRowHeaderView(new TextLineNumber(codeInput));
         codeScrollPane.setBorder(BorderFactory.createTitledBorder("Editeur"));
 
         JPanel buttonPanel = new JPanel(new BorderLayout());
