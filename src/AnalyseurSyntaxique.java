@@ -84,15 +84,15 @@ public class AnalyseurSyntaxique {
         if (typeCourant == TokenType.FOREACH) {
             Foreach();
         } else if (typeCourant == TokenType.IF || typeCourant == TokenType.WHILE || typeCourant == TokenType.FOR || typeCourant == TokenType.SWITCH) {
-            ignorerBloc(true); // Consommer le mot-clé
+            ignorerBloc(true);
         } else if (typeCourant == TokenType.DO) {
-            ignorerBloc(true); // Consommer le 'do'
+            ignorerBloc(true);
         } else if (typeCourant == TokenType.ELSE) {
-            i++; // Consomme le "else"
+            i++;
             if (i < tokens.size() && tokens.get(i).type == TokenType.IF) {
-                ignorerBloc(true); // C'est un "else if", consommer le 'if'
+                ignorerBloc(true);
             } else {
-                ignorerBloc(false); // C'est un "else" simple, ne pas consommer de mot-clé
+                ignorerBloc(false);
             }
         } else if (typeCourant == TokenType.VARIABLE) {
             Affectation();
@@ -111,12 +111,11 @@ public class AnalyseurSyntaxique {
 
     private static void ignorerBloc(boolean consommerMotCle) throws Exception {
         if (consommerMotCle) {
-            i++; // Consomme le mot-clé (if, while, etc.)
+            i++;
         }
 
-        TokenType typeCourant = tokens.get(i-1).type; // on se base sur le mot clé consomé
+        TokenType typeCourant = tokens.get(i-1).type;
 
-        // Les structures comme if, while, for, switch ont une condition entre parenthèses
         if (typeCourant == TokenType.IF || typeCourant == TokenType.WHILE || typeCourant == TokenType.FOR || typeCourant == TokenType.SWITCH) {
             if (!verifier(TokenType.PARENTHESE_OUVRANTE)) {
                 erreur("Structure de contrôle incomplète, parenthèse ouvrante manquante.");
@@ -135,7 +134,6 @@ public class AnalyseurSyntaxique {
             }
         }
 
-        // Toutes les structures peuvent être suivies d'un bloc d'accolades
         if (verifier(TokenType.ACCOLADE_OUVRANTE)) {
             int accolades = 1;
             while (i < tokens.size() && accolades > 0) {
@@ -148,17 +146,14 @@ public class AnalyseurSyntaxique {
                 erreur("Accolades non équilibrées dans le bloc.");
             }
         } else {
-            // Gère le cas d'une seule instruction (ex: if(true) echo...;)
-            // On avance jusqu'au prochain point-virgule, ou jusqu'à une accolade ouvrante
             while (i < tokens.size() && tokens.get(i).type != TokenType.POINT_VIRGULE && tokens.get(i).type != TokenType.ACCOLADE_OUVRANTE) {
                 i++;
             }
             if (i < tokens.size() && tokens.get(i).type == TokenType.POINT_VIRGULE) {
-                i++; // Consomme le point-virgule
+                i++;
             }
         }
 
-        // Cas spécifique du do-while, qui a un "while (...);" à la fin
         if (typeCourant == TokenType.DO) {
             if (!verifier(TokenType.WHILE)) {
                 erreur("Manque 'while' après le bloc do-while.");
@@ -188,14 +183,14 @@ public class AnalyseurSyntaxique {
     public static void Foreach() throws Exception {
         if (verifier(TokenType.FOREACH)) {
             if (verifier(TokenType.PARENTHESE_OUVRANTE)) {
-                Expression(); // Accepte une expression (comme un tableau)
+                Expression();
                 if (verifier(TokenType.AS)) {
                     if (verifier(TokenType.VARIABLE)) {
-                        if (verifier(TokenType.FLECHE)) { // cas avec clé => valeur
+                        if (verifier(TokenType.FLECHE)) {
                             if (verifier(TokenType.VARIABLE)) {
                                 if (verifier(TokenType.PARENTHESE_FERMANTE)) {
                                     if (verifier(TokenType.ACCOLADE_OUVRANTE)) {
-                                        S(); // Contenu du foreach
+                                        S();
                                         if (!verifier(TokenType.ACCOLADE_FERMANTE)) {
                                             erreur("Manque }");
                                         }
@@ -208,9 +203,9 @@ public class AnalyseurSyntaxique {
                             } else {
                                 erreur("Manque variable value");
                             }
-                        } else if (verifier(TokenType.PARENTHESE_FERMANTE)) { // cas avec valeur seulement
+                        } else if (verifier(TokenType.PARENTHESE_FERMANTE)) {
                             if (verifier(TokenType.ACCOLADE_OUVRANTE)) {
-                                S(); // Contenu du foreach
+                                S();
                                 if (!verifier(TokenType.ACCOLADE_FERMANTE)) {
                                     erreur("Manque }");
                                 }
@@ -280,7 +275,6 @@ public class AnalyseurSyntaxique {
         if (verifier(TokenType.FUNCTION)) {
             if (verifier(TokenType.IDENTIFIANT)) {
                 if (verifier(TokenType.PARENTHESE_OUVRANTE)) {
-                    // Paramètres
                     if (verifier(TokenType.VARIABLE)) {
                         while (verifier(TokenType.VIRGULE)) {
                             if (!verifier(TokenType.VARIABLE)) {
@@ -336,7 +330,7 @@ public class AnalyseurSyntaxique {
         while (i < tokens.size() &&
                 (tokens.get(i).type == TokenType.PLUS || tokens.get(i).type == TokenType.MOINS || tokens.get(i).type == TokenType.DOT)) {
             if (err) return;
-            i++; // Consomme l'opérateur
+            i++;
             Terme();
         }
     }
@@ -357,7 +351,7 @@ public class AnalyseurSyntaxique {
         TokenType typeCourant = tokens.get(i).type;
 
         if (typeCourant == TokenType.VARIABLE && i + 1 < tokens.size() && tokens.get(i + 1).type == TokenType.CROCHET_OUVRANT) {
-            i++; // Consomme la variable
+            i++;
             verifier(TokenType.CROCHET_OUVRANT);
             Expression();
             if (!verifier(TokenType.CROCHET_FERMANT)) {
@@ -379,20 +373,18 @@ public class AnalyseurSyntaxique {
             }
         }
         else if (typeCourant == TokenType.CROCHET_OUVRANT) {
-            i++; // On consomme le crochet ouvrant
-            if (tokens.get(i).type != TokenType.CROCHET_FERMANT) { // Si le tableau n'est pas vide
+            i++;
+            if (tokens.get(i).type != TokenType.CROCHET_FERMANT) {
                 do {
-                    // On regarde si on a une clé (STRING ou NOMBRE) suivie de '=>'
                     if ((tokens.get(i).type == TokenType.STRING || tokens.get(i).type == TokenType.NOMBRE) &&
                             i + 1 < tokens.size() && tokens.get(i + 1).type == TokenType.FLECHE) {
-                        i++; // On consomme la clé
-                        verifier(TokenType.FLECHE); // On consomme la flèche
-                        Expression(); // On parse la valeur
+                        i++;
+                        verifier(TokenType.FLECHE);
+                        Expression();
                     } else {
-                        // Sinon, c'est une valeur simple (tableau indexé)
                         Expression();
                     }
-                } while (verifier(TokenType.VIRGULE)); // On continue tant qu'il y a des virgules
+                } while (verifier(TokenType.VIRGULE));
             }
             if (!verifier(TokenType.CROCHET_FERMANT)) {
                 erreur("Manque ] pour fermer le tableau");

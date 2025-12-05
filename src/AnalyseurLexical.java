@@ -34,7 +34,6 @@ public class AnalyseurLexical {
         char c = lireCaractere();
 
         while (c != EOF) {
-            // 1. Blancs
             if (c == ' ' || c == '\t' || c == '\r') {
                 pos++;
             }
@@ -42,19 +41,15 @@ public class AnalyseurLexical {
                 ligne++;
                 pos++;
             }
-            // 2. Variables
             else if (c == '$') {
                 lireVariable();
             }
-            // 3. Mots
             else if (estLettre(c)) {
                 lireMot();
             }
-            // 4. Nombres
             else if (estChiffre(c)) {
                 lireNombre();
             }
-            // 5. Symboles et Opérateurs
             else {
                 if (c == '{') {
                     ajouterToken(TokenType.ACCOLADE_OUVRANTE, "{");
@@ -81,32 +76,28 @@ public class AnalyseurLexical {
                     ajouterToken(TokenType.POINT_VIRGULE, ";");
                     pos++;
                 }
-                // GESTION DU PLUS (+) et INCREMENTATION (++)
                 else if (c == '+') {
                     if (regarderSuivant() == '+') {
                         ajouterToken(TokenType.INCREMENTATION, "++");
                         pos += 2;
                     } else {
-                        ajouterToken(TokenType.PLUS, "+"); // Ajouté !
+                        ajouterToken(TokenType.PLUS, "+");
                         pos++;
                     }
                 }
-                // GESTION DU MOINS (-) et DECREMENTATION (--)
                 else if (c == '-') {
                     if (regarderSuivant() == '-') {
                         ajouterToken(TokenType.DECREMENTATION, "--");
                         pos += 2;
                     } else {
-                        ajouterToken(TokenType.MOINS, "-"); // Ajouté !
+                        ajouterToken(TokenType.MOINS, "-");
                         pos++;
                     }
                 }
-                // GESTION DU FOIS (*)
                 else if (c == '*') {
-                    ajouterToken(TokenType.FOIS, "*"); // Ajouté !
+                    ajouterToken(TokenType.FOIS, "*");
                     pos++;
                 }
-                // GESTION DU DIVISE (/)
                 else if (c == '/') {
                     if (regarderSuivant() == '/') {
                         lireCommentaireSimple();
@@ -117,16 +108,13 @@ public class AnalyseurLexical {
                         pos++;
                     }
                 }
-                // GESTION DES STRINGS
                 else if (c == '"' || c == '\'') {
                     lireString(c);
                 }
-                // GESTION DU POINT
                 else if (c == '.') {
                     ajouterToken(TokenType.DOT, ".");
                     pos++;
                 }
-                // GESTION DU TERNAIRE
                 else if (c == '?') {
                     if (regarderSuivant() == '>') {
                         ajouterToken(TokenType.PHP_TAG_FERMANT, "?>");
@@ -140,13 +128,11 @@ public class AnalyseurLexical {
                         ajouterToken(TokenType.PHP_TAG_OUVRANT, "<?php");
                         pos += 5;
                     }
-                    // Potentiellement d'autres opérateurs avec < ici
                 }
                 else if (c == ':') {
                     ajouterToken(TokenType.COLON, ":");
                     pos++;
                 }
-                // GESTION DES OPERATEURS LOGIQUES
                 else if (c == '&' && regarderSuivant() == '&') {
                     ajouterToken(TokenType.AND, "&&");
                     pos += 2;
@@ -154,7 +140,6 @@ public class AnalyseurLexical {
                     ajouterToken(TokenType.OR, "||");
                     pos += 2;
                 }
-                // GESTION DU EGAL (=) et EGALITE (==)
                 else if (c == '=') {
                     if (regarderSuivant() == '=') {
                         ajouterToken(TokenType.EGALITE, "==");
@@ -180,31 +165,30 @@ public class AnalyseurLexical {
     }
 
     private void lireCommentaireSimple() {
-        pos += 2; // Saute le //
+        pos += 2;
         while (lireCaractere() != '\n' && lireCaractere() != EOF) {
             pos++;
         }
     }
 
     private void lireCommentaireMultiLignes() {
-        pos += 2; // Saute le /*
+        pos += 2;
         while (lireCaractere() != '*' || regarderSuivant() != '/') {
             if (lireCaractere() == '\n') {
                 ligne++;
             }
             if (lireCaractere() == EOF) {
-                // Erreur, commentaire non fermé
                 return;
             }
             pos++;
         }
-        pos += 2; // Saute le */
+        pos += 2;
     }
 
     private void lireString(char delimiteur) {
         int debut = ++pos;
         while (lireCaractere() != delimiteur && lireCaractere() != EOF) {
-            if (lireCaractere() == '\\') { // Gérer les caractères d'échappement
+            if (lireCaractere() == '\\') {
                 pos++;
             }
             pos++;
